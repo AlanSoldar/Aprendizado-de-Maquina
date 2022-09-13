@@ -83,15 +83,11 @@ class Data:
 
         for i in range(k):
             auxOfProportion = {}
-            #sum = 0
             for key in keyList:
                 auxOfProportion[key] = numInstanceKeepProportion[key]
                 if(restOfNumInstanceKeepProportion[key] > 0):
                    auxOfProportion[key] += 1
                    restOfNumInstanceKeepProportion[key] -= 1
-            #    sum += auxOfProportion[key]
-
-            #print("SumProportion: ",sum," QtdIntancesByFold: ",auxQtdInstance)
 
             foldTemp = pd.DataFrame()
             j = 0
@@ -106,10 +102,6 @@ class Data:
                         dataTemp.drop([dataTemp.index[j]], inplace=True)
                 else:
                     j = -1
-                    #for key in keyList:
-                    #    print(key,": ",auxOfProportion[key])
-                    #print("Instances faltando: ", auxQtdInstance)
-                    #print("Table: ", dataTemp)
                 j += 1
             
             self.__dataByFold[i] = foldTemp

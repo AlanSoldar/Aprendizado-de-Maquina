@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import sys
 import pandas as pd
 from data import Data
 from analyzer import *
@@ -9,7 +10,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
 
-table = Data("data\water_potability.csv",10)
+table = Data("..\data\water_potability_reduced.csv",10)
 
 analysis = Analyzer([1,0])
 accuracy = []
@@ -35,27 +36,34 @@ for keyFoldTest in data:
     expectedTraining = foldTrainingSet['Potability'].to_numpy()
     expectedTest = foldTestSet['Potability'].to_numpy()
     
-    #test = KNeighborsClassifier(5)
-    test = GaussianNB()
-    #test = RandomForestClassifier()
+    mode = sys.argv[1]
+    if mode == "KNN":
+        print("Running KNN")
+        test = KNeighborsClassifier(5)
+    elif mode == "naive":
+        print("Running naive bayes")
+        test = GaussianNB()
+    else:
+        print("Running random forest")
+        test = RandomForestClassifier()
 
     test.fit(foldTrainingSet.to_numpy(), expectedTraining)
     pred = test.predict(foldTestSet.to_numpy())
     print(pred)
     print(expectedTest)
 
-    #print("accuracy = ", metrics.accuracy_score(expectedTest, pred))
-    #print("recall = ", metrics.recall_score(expectedTest, pred))
-    #print("precision = ", metrics.precision_score(expectedTest, pred))
-    #print("f1 = ", metrics.f1_score(expectedTest, pred))
-
-
+    #calculo de metricas usando biblioteca
+    # print("accuracy = ", metrics.accuracy_score(expectedTest, pred))
+    # print("recall = ", metrics.recall_score(expectedTest, pred))
+    # print("precision = ", metrics.precision_score(expectedTest, pred))
+    # print("f1 = ", metrics.f1_score(expectedTest, pred))
 
     for index in range(len(pred)):
         analysis.addValueInConfusionMatrix(pred[index], expectedTest[index])
 
     #print(analysis.getConfusionMatrix())
 
+    #calculo de metricas usando codigo implementado
     print("accuracy = ", analysis.calcAccuracy())
     print("precision = ", analysis.calcPrecision(1))
     print("recall = ", analysis.calcRecall(1))
