@@ -10,19 +10,25 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
 
-table = Data("..\data\water_potability_reduced.csv",10)
+table = Data("..\data\water_potability_rnd.csv",5)
 
 analysis = Analyzer([1,0])
 accuracy = []
 precision = []
 recall = []
 f1Measure = []
+accuracySum = 0
+precisionSum = 0
+recallSum = 0
+f1Sum = 0
+
+mode = sys.argv[1]
 
 data = table.getDataByFold()
 
-print("|************************|************************|***********************|")
-print("| Fold de Teste/Iteracao |        Acuracia        |      F1-measure       |")
-print("|________________________|________________________|_______________________|")
+print("|*************************************************************************|")
+print("|                                Inicio                                   |")
+print("|_________________________________________________________________________|")
 
 for keyFoldTest in data:
     foldTrainingSet = pd.DataFrame()
@@ -36,21 +42,24 @@ for keyFoldTest in data:
     expectedTraining = foldTrainingSet['Potability'].to_numpy()
     expectedTest = foldTestSet['Potability'].to_numpy()
     
-    mode = sys.argv[1]
+    trainingFoldSize = len(foldTrainingSet)
+    testFoldSize = len(foldTestSet)
+
     if mode == "KNN":
-        print("Running KNN")
+        print("\nRunning KNN")
         test = KNeighborsClassifier(5)
     elif mode == "naive":
-        print("Running naive bayes")
+        print("\nRunning naive bayes")
         test = GaussianNB()
     else:
-        print("Running random forest")
+        print("\nRunning random forest")
         test = RandomForestClassifier()
+
+    print("training dataset size = ", trainingFoldSize)
+    print("validation dataset size = ", testFoldSize)
 
     test.fit(foldTrainingSet.to_numpy(), expectedTraining)
     pred = test.predict(foldTestSet.to_numpy())
-    print(pred)
-    print(expectedTest)
 
     #calculo de metricas usando biblioteca
     # print("accuracy = ", metrics.accuracy_score(expectedTest, pred))
@@ -63,11 +72,36 @@ for keyFoldTest in data:
 
     #print(analysis.getConfusionMatrix())
 
+    accuracySum += analysis.calcAccuracy()
+    precisionSum += analysis.calcPrecision(1)
+    recallSum += analysis.calcRecall(1)
+    f1Sum += analysis.calcFBethaMeasure(1)
+
     #calculo de metricas usando codigo implementado
     print("accuracy = ", analysis.calcAccuracy())
     print("precision = ", analysis.calcPrecision(1))
     print("recall = ", analysis.calcRecall(1))
     print("f1 = ", analysis.calcFBethaMeasure(1))
+
+
+print("\n\n")
+if mode == "KNN":
+    print("Running KNN")
+    test = KNeighborsClassifier(5)
+elif mode == "naive":
+    print("Running naive bayes")
+    test = GaussianNB()
+else:
+    print("Running random forest")
+    test = RandomForestClassifier()
+
+print("\naccuracy final = ", accuracySum/5)
+print("precision final = ", precisionSum/5)
+print("recall final = ", recallSum/5)
+print("f1 final = ", f1Sum/5)
+print("|*************************************************************************|")
+print("|                                FIM                                      |")
+print("|_________________________________________________________________________|")
 
 
     

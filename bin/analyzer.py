@@ -19,7 +19,6 @@ class Analyzer:
                 if(keyPredicted != keyOriginal):
                     sumFalses += self.__confusionMatrix[keyPredicted].loc[keyOriginal]
         n = sumTrues + sumFalses
-        print(n)
 
         return sumTrues/n
 

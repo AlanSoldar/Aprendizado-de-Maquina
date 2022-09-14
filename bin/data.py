@@ -101,7 +101,7 @@ class Data:
                         auxQtdInstance -= 1
                         dataTemp.drop([dataTemp.index[j]], inplace=True)
                 else:
-                    j = -1
+                    auxQtdInstance = -1
                 j += 1
             
             self.__dataByFold[i] = foldTemp
